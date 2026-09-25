@@ -63,3 +63,8 @@ Packages the project source code and output into a final submission archive:
 ```bash
 python create_submission_zip.py
 ```
+Check Results: Once finished, verify the generated file size and format with
+
+```bash
+python utils/validate_submission.py
+```
