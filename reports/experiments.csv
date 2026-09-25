@@ -1,0 +1,7 @@
+experiment_name,model,features,negatives,threshold,macro_f05,macro_precision,macro_recall,singleton_acc,cand_recall,runtime_s
+Exp 1: Heuristic Similarity Baseline,Weighted Rules (Model A),Token Sets + Edit Ratio + Numbers,Hard Negatives from Blocking,0.74,0.90334,0.95077,0.81256,0.95056,95.05,2.09
+Exp 2: Logistic Regression,Logistic Regression (Model B),All 33 Pair Features,Hard Negatives from Blocking,0.94,0.95004,0.96865,0.91665,0.93034,95.05,4.0
+Exp 3: LightGBM (Name Only),LightGBM GBDT,13 Name Features,Hard Negatives from Blocking,0.76,0.9443,0.96627,0.9042,0.89663,95.05,4.48
+Exp 4: LightGBM (Address Only),LightGBM GBDT,11 Address Features,Hard Negatives from Blocking,0.72,0.91036,0.9481,0.84521,0.91461,95.05,3.47
+Exp 5: LightGBM (Full Features),LightGBM GBDT,All 33 Features (Name+Addr+Cross+Source),Hard Negatives from Blocking,0.84,0.95835,0.97749,0.9203,0.93933,95.05,7.67
+Exp 6: Source-Specific Calibration,LightGBM GBDT,All 33 Features,Hard Negatives from Blocking,S2:0.85/S3:0.85,0.95834,0.97783,0.91934,0.94382,95.05,4.62

@@ -1,0 +1,20 @@
+# Local environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Challenge data is supplied separately and is too large for GitHub
+dataset/
+6ab10eb3b23ba_student_resource/student_resource/dataset/
+6ab10eb3b23ba_student_resource/__MACOSX/
+6ab10eb3b23ba_student_resource/
+
+# Generated submission artifacts
+*_submission.zip
+output/*.tsv
+
+# Large source assets, not required to run the code
+*.mp4
+*.pdf
