@@ -1,0 +1,6 @@
+data/
+dataset/
+*.csv
+*.h5
+*.pth
+*.pkl

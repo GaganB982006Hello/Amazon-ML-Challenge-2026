@@ -1,0 +1,335 @@
+{
+  "ground_truth": {
+    "total_source1_entities": 200000,
+    "singletons": 11194,
+    "singleton_rate": 0.05597,
+    "non_singletons": 188806,
+    "total_matched_ids": 693069,
+    "avg_matches_per_s1": 3.465345,
+    "avg_matches_per_matched_s1": 3.6707996567905683,
+    "s2_match_count": 174027,
+    "s2_match_rate": 0.870135,
+    "s3_match_count": 175950,
+    "s3_match_rate": 0.87975,
+    "both_s2_s3_match_count": 161171,
+    "both_s2_s3_match_rate": 0.805855,
+    "match_count_distribution": {
+      "0": 11194,
+      "1": 10690,
+      "2": 33695,
+      "3": 48320,
+      "4": 43899,
+      "5": 29276,
+      "6": 15054,
+      "7": 5781,
+      "8": 1616,
+      "9": 420,
+      "10": 51,
+      "11": 4
+    }
+  },
+  "sources": {
+    "train_source1.tsv": {
+      "file_name": "train_source1.tsv",
+      "total_rows": 50000,
+      "missing_names": 0,
+      "missing_names_pct": 0.0,
+      "missing_addresses": 0,
+      "missing_addresses_pct": 0.0,
+      "missing_country": 0,
+      "country_distribution": {
+        "US": 29965,
+        "India": 20035
+      },
+      "name_char_length_stats": {
+        "min": 3,
+        "max": 71,
+        "mean": 24.07,
+        "median": 24.0
+      },
+      "name_token_count_stats": {
+        "min": 1,
+        "max": 12,
+        "mean": 3.55,
+        "median": 4.0
+      },
+      "address_char_length_stats": {
+        "min": 16,
+        "max": 201,
+        "mean": 52.03,
+        "median": 41.0
+      },
+      "address_token_count_stats": {
+        "min": 3,
+        "max": 34,
+        "mean": 8.03,
+        "median": 7.0
+      },
+      "has_devanagari_rows": 0,
+      "has_accented_rows": 0,
+      "has_leading_decor_rows": 74,
+      "legal_suffix_matches": {
+        "\\b(ltd|limited)\\b": 15287,
+        "\\b(pvt|private)\\s+(ltd|limited)\\b": 12026,
+        "\\b(llc|llp)\\b": 9014,
+        "\\b(inc|incorporated)\\b": 5516,
+        "\\b(corp|corporation)\\b": 1095,
+        "\\b(co|company)\\b": 867,
+        "\\b(sarl|sas|sci)\\b": 7,
+        "\\b(gmbh|ag)\\b": 3
+      }
+    },
+    "train_source2.tsv": {
+      "file_name": "train_source2.tsv",
+      "total_rows": 50000,
+      "missing_names": 0,
+      "missing_names_pct": 0.0,
+      "missing_addresses": 1682,
+      "missing_addresses_pct": 3.364,
+      "missing_country": 0,
+      "country_distribution": {
+        "US": 30097,
+        "India": 19903
+      },
+      "name_char_length_stats": {
+        "min": 2,
+        "max": 104,
+        "mean": 25.03,
+        "median": 25.0
+      },
+      "name_token_count_stats": {
+        "min": 1,
+        "max": 15,
+        "mean": 3.49,
+        "median": 4.0
+      },
+      "address_char_length_stats": {
+        "min": 12,
+        "max": 176,
+        "mean": 47.74,
+        "median": 37.0
+      },
+      "address_token_count_stats": {
+        "min": 2,
+        "max": 29,
+        "mean": 7.52,
+        "median": 6.0
+      },
+      "has_devanagari_rows": 5260,
+      "has_accented_rows": 2902,
+      "has_leading_decor_rows": 3046,
+      "legal_suffix_matches": {
+        "\\b(ltd|limited)\\b": 9183,
+        "\\b(llc|llp)\\b": 5860,
+        "\\b(inc|incorporated)\\b": 4193,
+        "\\b(pvt|private)\\s+(ltd|limited)\\b": 3919,
+        "\\b(corp|corporation)\\b": 2065,
+        "\\b(co|company)\\b": 1750,
+        "\\b(sarl|sas|sci)\\b": 3
+      }
+    },
+    "train_source3.tsv": {
+      "file_name": "train_source3.tsv",
+      "total_rows": 50000,
+      "missing_names": 0,
+      "missing_names_pct": 0.0,
+      "missing_addresses": 1740,
+      "missing_addresses_pct": 3.48,
+      "missing_country": 0,
+      "country_distribution": {
+        "US": 29790,
+        "India": 20210
+      },
+      "name_char_length_stats": {
+        "min": 2,
+        "max": 80,
+        "mean": 25.21,
+        "median": 25.0
+      },
+      "name_token_count_stats": {
+        "min": 1,
+        "max": 13,
+        "mean": 3.52,
+        "median": 4.0
+      },
+      "address_char_length_stats": {
+        "min": 6,
+        "max": 198,
+        "mean": 48.49,
+        "median": 42.0
+      },
+      "address_token_count_stats": {
+        "min": 2,
+        "max": 31,
+        "mean": 7.44,
+        "median": 6.0
+      },
+      "has_devanagari_rows": 4154,
+      "has_accented_rows": 3187,
+      "has_leading_decor_rows": 2167,
+      "legal_suffix_matches": {
+        "\\b(ltd|limited)\\b": 10575,
+        "\\b(llc|llp)\\b": 6062,
+        "\\b(pvt|private)\\s+(ltd|limited)\\b": 4799,
+        "\\b(inc|incorporated)\\b": 4143,
+        "\\b(corp|corporation)\\b": 1843,
+        "\\b(co|company)\\b": 1581,
+        "\\b(gmbh|ag)\\b": 3,
+        "\\b(sarl|sas|sci)\\b": 2
+      }
+    },
+    "test_source1.tsv": {
+      "file_name": "test_source1.tsv",
+      "total_rows": 50000,
+      "missing_names": 0,
+      "missing_names_pct": 0.0,
+      "missing_addresses": 0,
+      "missing_addresses_pct": 0.0,
+      "missing_country": 0,
+      "country_distribution": {
+        "India": 23300,
+        "US": 19215,
+        "France": 7485
+      },
+      "name_char_length_stats": {
+        "min": 3,
+        "max": 75,
+        "mean": 23.83,
+        "median": 24.0
+      },
+      "name_token_count_stats": {
+        "min": 1,
+        "max": 11,
+        "mean": 3.52,
+        "median": 4.0
+      },
+      "address_char_length_stats": {
+        "min": 15,
+        "max": 216,
+        "mean": 57.01,
+        "median": 50.0
+      },
+      "address_token_count_stats": {
+        "min": 2,
+        "max": 32,
+        "mean": 8.56,
+        "median": 8.0
+      },
+      "has_devanagari_rows": 0,
+      "has_accented_rows": 1189,
+      "has_leading_decor_rows": 324,
+      "legal_suffix_matches": {
+        "\\b(ltd|limited)\\b": 17637,
+        "\\b(pvt|private)\\s+(ltd|limited)\\b": 13887,
+        "\\b(llc|llp)\\b": 6158,
+        "\\b(sarl|sas|sci)\\b": 3822,
+        "\\b(inc|incorporated)\\b": 3446,
+        "\\b(co|company)\\b": 913,
+        "\\b(corp|corporation)\\b": 873,
+        "\\b(gmbh|ag)\\b": 5
+      }
+    },
+    "test_source2.tsv": {
+      "file_name": "test_source2.tsv",
+      "total_rows": 50000,
+      "missing_names": 0,
+      "missing_names_pct": 0.0,
+      "missing_addresses": 1331,
+      "missing_addresses_pct": 2.662,
+      "missing_country": 0,
+      "country_distribution": {
+        "India": 23534,
+        "US": 19238,
+        "France": 7228
+      },
+      "name_char_length_stats": {
+        "min": 2,
+        "max": 74,
+        "mean": 25.71,
+        "median": 25.0
+      },
+      "name_token_count_stats": {
+        "min": 1,
+        "max": 11,
+        "mean": 3.59,
+        "median": 4.0
+      },
+      "address_char_length_stats": {
+        "min": 5,
+        "max": 211,
+        "mean": 51.61,
+        "median": 43
+      },
+      "address_token_count_stats": {
+        "min": 1,
+        "max": 34,
+        "mean": 7.98,
+        "median": 7
+      },
+      "has_devanagari_rows": 6531,
+      "has_accented_rows": 3958,
+      "has_leading_decor_rows": 3571,
+      "legal_suffix_matches": {
+        "\\b(ltd|limited)\\b": 10727,
+        "\\b(pvt|private)\\s+(ltd|limited)\\b": 4575,
+        "\\b(llc|llp)\\b": 4134,
+        "\\b(inc|incorporated)\\b": 2729,
+        "\\b(sarl|sas|sci)\\b": 2695,
+        "\\b(corp|corporation)\\b": 1758,
+        "\\b(co|company)\\b": 1597,
+        "\\b(gmbh|ag)\\b": 3
+      }
+    },
+    "test_source3.tsv": {
+      "file_name": "test_source3.tsv",
+      "total_rows": 50000,
+      "missing_names": 0,
+      "missing_names_pct": 0.0,
+      "missing_addresses": 1380,
+      "missing_addresses_pct": 2.76,
+      "missing_country": 0,
+      "country_distribution": {
+        "India": 23690,
+        "US": 19249,
+        "France": 7061
+      },
+      "name_char_length_stats": {
+        "min": 2,
+        "max": 78,
+        "mean": 25.74,
+        "median": 25.0
+      },
+      "name_token_count_stats": {
+        "min": 1,
+        "max": 11,
+        "mean": 3.61,
+        "median": 4.0
+      },
+      "address_char_length_stats": {
+        "min": 5,
+        "max": 213,
+        "mean": 50.07,
+        "median": 44.0
+      },
+      "address_token_count_stats": {
+        "min": 1,
+        "max": 36,
+        "mean": 7.71,
+        "median": 7.0
+      },
+      "has_devanagari_rows": 4830,
+      "has_accented_rows": 4077,
+      "has_leading_decor_rows": 2447,
+      "legal_suffix_matches": {
+        "\\b(ltd|limited)\\b": 12424,
+        "\\b(pvt|private)\\s+(ltd|limited)\\b": 5841,
+        "\\b(llc|llp)\\b": 4300,
+        "\\b(inc|incorporated)\\b": 2772,
+        "\\b(sarl|sas|sci)\\b": 2688,
+        "\\b(co|company)\\b": 1626,
+        "\\b(corp|corporation)\\b": 1600,
+        "\\b(gmbh|ag)\\b": 9
+      }
+    }
+  }
+}
