@@ -53,23 +53,15 @@ class MultiStrategyBlocker:
         # Country-partitioned indexes
         self.country_indexes: Dict[str, Dict[str, Dict[str, List[str]]]] = defaultdict(
             lambda: {
-                "exact_clean": defaultdict(list),
-                "stripped_legal": defaultdict(list),
-                "compact_alpha": defaultdict(list),
-                "first_word_num": defaultdict(list),
+                "name": defaultdict(list),
                 "rare_token": defaultdict(list),
-                "rare_addr_token": defaultdict(list),
-                "house_num_match": defaultdict(list),
             }
         )
 
-        # Store target entity metadata for quick candidate scoring
-        # target_id -> (clean_name, stripped_name, country, tokens_set, addr_tokens_set, numbers_set)
-        self.target_meta: Dict[str, Tuple[str, str, str, Set[str], Set[str], Set[str]]] = {}
+        self.target_records: Dict[str, Any] = {}
 
         # Token frequencies per country to filter high-frequency tokens
         self.token_freqs: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
-        self.addr_token_freqs: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
     def index_target_entities(
         self,
@@ -77,6 +69,7 @@ class MultiStrategyBlocker:
     ) -> None:
         """Index all target entities (S2 and S3) across multiple blocking strategies."""
         print(f"Indexing {len(target_records):,} target entities...")
+        self.target_records = target_records
 
         # First pass: count token frequencies per country to cap common tokens
         for eid, rec in target_records.items():
@@ -86,10 +79,6 @@ class MultiStrategyBlocker:
                 if len(t) >= self.min_token_len and t not in self.stopwords:
                     self.token_freqs[country][t] += 1
 
-            _, addr_tokens, _ = normalize_address(rec.business_address, country)
-            for at in set(addr_tokens):
-                if len(at) >= self.min_token_len and at not in self.stopwords and not at.isdigit():
-                    self.addr_token_freqs[country][at] += 1
 
         # Second pass: build inverted indexes
         for eid, rec in target_records.items():
@@ -97,33 +86,13 @@ class MultiStrategyBlocker:
             idx = self.country_indexes[country]
 
             raw_clean, stripped_legal, tokens = normalize_business_name(rec.business_name)
-            addr_norm, addr_tokens, addr_numbers = normalize_address(rec.business_address, country)
-
             token_set = set(tokens)
-            addr_token_set = set(addr_tokens)
-            self.target_meta[eid] = (raw_clean, stripped_legal, country, token_set, addr_token_set, addr_numbers)
 
-            # Strategy 1: Exact clean name
+            # Store both normalized name forms in one index to avoid duplicate indexes.
             if raw_clean:
-                idx["exact_clean"][raw_clean].append(eid)
-
-            # Strategy 2: Stripped legal name
+                idx["name"][raw_clean].append(eid)
             if stripped_legal and stripped_legal != raw_clean:
-                idx["stripped_legal"][stripped_legal].append(eid)
-
-            # Strategy 3: Compact alphanumeric (removes spaces, symbols, and domain parts)
-            compact = re.sub(r"[^\w\u0900-\u0D7F]+", "", stripped_legal or raw_clean)
-            if compact and len(compact) >= 4:
-                idx["compact_alpha"][compact].append(eid)
-
-            # Strategy 4: First word + numeric address token (house number or PIN)
-            if tokens and addr_numbers:
-                first_w = tokens[0]
-                if len(first_w) >= 3 and first_w not in self.stopwords:
-                    for num in addr_numbers:
-                        if len(num) <= 8:
-                            key = f"{first_w}_{num}"
-                            idx["first_word_num"][key].append(eid)
+                idx["name"][stripped_legal].append(eid)
 
             # Strategy 5: Rare name tokens
             for t in token_set:
@@ -134,27 +103,7 @@ class MultiStrategyBlocker:
                 ):
                     idx["rare_token"][t].append(eid)
 
-            # Strategy 6: Rare address tokens (catches translated/Indic names and DBA trade names)
-            for at in addr_token_set:
-                if (
-                    len(at) >= 4
-                    and at not in self.stopwords
-                    and not at.isdigit()
-                    and self.addr_token_freqs[country].get(at, 999999) <= (self.max_token_doc_freq // 2)
-                ):
-                    idx["rare_addr_token"][at].append(eid)
 
-            # Strategy 7: House number + address street token
-            for num in addr_numbers:
-                if len(num) >= 2 and len(num) <= 7:
-                    for at in addr_tokens:
-                        if (
-                            len(at) >= 4
-                            and at not in self.stopwords
-                            and not at.isdigit()
-                        ):
-                            key = f"{at}_{num}"
-                            idx["house_num_match"][key].append(eid)
 
         print(f"Finished indexing targets into country-partitioned multi-indexes.")
 
@@ -172,34 +121,15 @@ class MultiStrategyBlocker:
             return set()
 
         raw_clean, stripped_legal, tokens = normalize_business_name(business_name)
-        addr_norm, addr_tokens, addr_numbers = normalize_address(business_address, country)
         token_set = set(tokens)
-        addr_token_set = set(addr_tokens)
 
         candidates: Set[str] = set()
 
-        # 1. Exact clean name matches
-        if raw_clean in idx["exact_clean"]:
-            candidates.update(idx["exact_clean"][raw_clean])
+        if raw_clean in idx["name"]:
+            candidates.update(idx["name"][raw_clean])
+        if stripped_legal and stripped_legal != raw_clean and stripped_legal in idx["name"]:
+            candidates.update(idx["name"][stripped_legal])
 
-        # 2. Stripped legal matches
-        if stripped_legal and stripped_legal in idx["stripped_legal"]:
-            candidates.update(idx["stripped_legal"][stripped_legal])
-
-        # 3. Compact alphanumeric matches
-        compact = re.sub(r"[^\w\u0900-\u0D7F]+", "", stripped_legal or raw_clean)
-        if compact and len(compact) >= 4 and compact in idx["compact_alpha"]:
-            candidates.update(idx["compact_alpha"][compact])
-
-        # 4. First word + number matches
-        if tokens and addr_numbers:
-            first_w = tokens[0]
-            if len(first_w) >= 3 and first_w not in self.stopwords:
-                for num in addr_numbers:
-                    if len(num) <= 8:
-                        key = f"{first_w}_{num}"
-                        if key in idx["first_word_num"]:
-                            candidates.update(idx["first_word_num"][key])
 
         # 5. Rare name tokens
         for t in token_set:
@@ -214,42 +144,23 @@ class MultiStrategyBlocker:
                         if len(candidates) >= self.max_candidates_per_s1 * 3:
                             break
 
-        # 6. Rare address tokens (bridges across languages / trade names)
-        for at in addr_token_set:
-            if (
-                len(at) >= 4
-                and at not in self.stopwords
-                and not at.isdigit()
-                and self.addr_token_freqs[country_key].get(at, 999999) <= (self.max_token_doc_freq // 2)
-            ):
-                if at in idx["rare_addr_token"]:
-                    for tid in idx["rare_addr_token"][at]:
-                        candidates.add(tid)
-                        if len(candidates) >= self.max_candidates_per_s1 * 3:
-                            break
 
-        # 7. House number + address token matches
-        for num in addr_numbers:
-            if len(num) >= 2 and len(num) <= 7:
-                for at in addr_tokens:
-                    if (
-                        len(at) >= 4
-                        and at not in self.stopwords
-                        and not at.isdigit()
-                    ):
-                        key = f"{at}_{num}"
-                        if key in idx["house_num_match"]:
-                            candidates.update(idx["house_num_match"][key])
 
         # Cap candidates per S1 entity to avoid explosion
         if len(candidates) > self.max_candidates_per_s1:
+            _, addr_tokens, addr_numbers = normalize_address(business_address, country)
+            addr_token_set = set(addr_tokens)
             scored = []
             for cid in candidates:
-                meta = self.target_meta.get(cid)
-                if not meta:
+                rec = self.target_records.get(cid)
+                if rec is None:
                     scored.append((0, cid))
                     continue
-                c_clean, c_strip, _, c_tokens, c_addr_tokens, c_nums = meta
+                c_clean, c_strip, c_tokens = normalize_business_name(rec.business_name)
+                _, c_addr_tokens, c_nums = normalize_address(rec.business_address, country)
+                c_tokens = set(c_tokens)
+                c_addr_tokens = set(c_addr_tokens)
+                c_nums = set(c_nums)
                 score = 0.0
                 if c_clean == raw_clean or c_strip == stripped_legal:
                     score += 10.0
