@@ -118,7 +118,7 @@ def run_full_inference(
     config: PipelineConfig,
     paths: PathConfig,
     threshold: float = 0.70,
-    chunk_size: int = 500,
+    chunk_size: int = 50000,
 ) -> None:
     """Run full test inference country-by-country and write final outputs."""
     print("=" * 60)
@@ -256,6 +256,9 @@ def run_full_inference(
                     if written_status.get(rec.entity_id, (0, 0)) != (1, 1)
                 ]
                 if not pending_chunk:
+                    feature_extractor.clear_cache()
+                    del written_status, chunk_ids, s1_chunk
+                    gc.collect()
                     continue
 
                 matches, candidates = run_country_inference(
@@ -307,10 +310,10 @@ def run_full_inference(
                 total_s1_processed += len(pending_chunk)
                 print(f"  [{country}] Chunk {chunk_idx}: Processed {len(pending_chunk):,} entities in {time.time()-chunk_start:.1f}s "
                       f"(Country Progress: {country_s1_processed:,})")
+                feature_extractor.clear_cache()
                 del matches, candidates, pending_chunk
                 del written_status, chunk_ids, s1_chunk
-                if chunk_idx % 10 == 0:
-                    gc.collect()
+                gc.collect()
 
         print(f"Country {country} completed in {time.time()-t_country:.1f}s.")
 
@@ -358,7 +361,7 @@ def main():
     parser.add_argument("--mode", choices=["train", "inference", "all"], default="all")
     parser.add_argument("--train-size", type=int, default=30000)
     parser.add_argument("--threshold", type=float, default=0.72)
-    parser.add_argument("--chunk-size", type=int, default=500)
+    parser.add_argument("--chunk-size", type=int, default=50000)
     args = parser.parse_args()
 
     cfg = PipelineConfig()

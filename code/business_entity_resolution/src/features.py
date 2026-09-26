@@ -67,6 +67,10 @@ class PairFeatureExtractor:
         # eid -> (addr_norm, tokens_set, token_list, numeric_set, is_empty)
         self.addr_cache: Dict[str, Tuple[str, Set[str], List[str], Set[str], float]] = {}
 
+    def clear_cache(self) -> None:
+        self.name_cache.clear()
+        self.addr_cache.clear()
+
     def get_name_rep(self, eid: str, name: str) -> Tuple[str, str, Set[str], List[str], Set[str]]:
         if eid in self.name_cache:
             return self.name_cache[eid]
