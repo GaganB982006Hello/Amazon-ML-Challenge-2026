@@ -96,4 +96,4 @@ class PipelineConfig:
     s3_threshold: float = 0.70
 
     # Singleton prediction margin
-    singleton_score_margin: float = 0.15
+    singleton_score_margin: float = 0.25

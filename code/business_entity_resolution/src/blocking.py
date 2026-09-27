@@ -55,6 +55,7 @@ class MultiStrategyBlocker:
             lambda: {
                 "name": defaultdict(list),
                 "rare_token": defaultdict(list),
+                "rare_addr_token": defaultdict(list),
             }
         )
 
@@ -86,6 +87,7 @@ class MultiStrategyBlocker:
             idx = self.country_indexes[country]
 
             raw_clean, stripped_legal, tokens = normalize_business_name(rec.business_name)
+            _, addr_tokens, _ = normalize_address(rec.business_address, country)
             token_set = set(tokens)
 
             # Store both normalized name forms in one index to avoid duplicate indexes.
@@ -102,6 +104,16 @@ class MultiStrategyBlocker:
                     and self.token_freqs[country][t] <= self.max_token_doc_freq
                 ):
                     idx["rare_token"][t].append(eid)
+
+            for token in set(addr_tokens):
+                if (
+                    len(token) >= 4
+                    and token not in self.stopwords
+                    and not token.isdigit()
+                ):
+                    postings = idx["rare_addr_token"][token]
+                    if len(postings) < self.max_token_doc_freq // 2:
+                        postings.append(eid)
 
 
 
@@ -122,6 +134,7 @@ class MultiStrategyBlocker:
 
         raw_clean, stripped_legal, tokens = normalize_business_name(business_name)
         token_set = set(tokens)
+        _, addr_tokens, addr_numbers = normalize_address(business_address, country)
 
         candidates: Set[str] = set()
 
@@ -144,11 +157,21 @@ class MultiStrategyBlocker:
                         if len(candidates) >= self.max_candidates_per_s1 * 3:
                             break
 
+        for token in set(addr_tokens):
+            if (
+                len(token) >= 4
+                and token not in self.stopwords
+                and not token.isdigit()
+            ):
+                for target_id in idx["rare_addr_token"].get(token, ()):
+                    candidates.add(target_id)
+                    if len(candidates) >= self.max_candidates_per_s1 * 3:
+                        break
+
 
 
         # Cap candidates per S1 entity to avoid explosion
         if len(candidates) > self.max_candidates_per_s1:
-            _, addr_tokens, addr_numbers = normalize_address(business_address, country)
             addr_token_set = set(addr_tokens)
             scored = []
             for cid in candidates:
